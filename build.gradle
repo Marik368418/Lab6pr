@@ -1,0 +1,67 @@
+subprojects {
+    apply plugin: 'java'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        implementation 'com.google.code.gson:gson:2.10.1'
+    }
+}
+
+
+project(':server') {
+    apply plugin: 'application'
+    mainClassName = 'server.MainServer'
+    dependencies {
+        implementation project(':general')
+        implementation group: 'com.opencsv', name: 'opencsv', version: '5.7.1'
+        // https://mvnrepository.com/artifact/com.google.code.gson/gson
+        implementation 'com.google.code.gson:gson:2.10.1'
+        // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    }
+//    jar {
+//        manifest {
+//            attributes 'Main-Class': 'server.MainServer'
+//        }
+//    }
+
+    task fatJarServer(type: Jar) {
+        manifest {
+            archiveBaseName="server-final";
+            attributes 'Main-Class': 'server.MainServer'
+        }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+        with jar
+    }
+
+}
+
+project(':client') {
+    apply plugin: 'application'
+    mainClassName = 'client.MainClient'
+    dependencies {
+        implementation project(':general')
+        implementation project(':server')
+        implementation group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.15'
+    }
+    run {
+        standardInput = System.in
+    }
+//    jar {
+//        manifest {
+//            attributes 'Main-Class': 'client.MainClient'
+//        }
+//    }
+
+    task fatJarClient(type: Jar) {
+        manifest {
+            archiveBaseName="client-final";
+            attributes 'Main-Class': 'client.MainClient'
+        }
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+        with jar
+    }
+
+}

@@ -1,0 +1,5 @@
+rootProject.name = 'labSpringProg'
+include ':server'
+include ':client'
+include ':general'
+
